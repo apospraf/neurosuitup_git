@@ -1,0 +1,6 @@
+{
+	"env": {
+		"MONGO_URI": "mongodb+srv://bertTest:Jb82JpjL54vfeRc7@neurosuitup.bi5u6.mongodb.net/neurosuitup?retryWrites=true&w=majority",
+		"JWT_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQHNlbGYuY29tIiwidXNlcklkIjoiNjE2MDMxM2NlODNjNmYzNDJiYjRiNTMwIiwicm9sZSI6ImRlZmF1bHQiLCJpYXQiOjE2MzM2OTg2NzksImV4cCI6MTYzMzcwMjI3OX0.eLVK0IILKCxSseuN6Ldy_swCNrFl-vE3QCTYQBBkC2I"
+	}
+}

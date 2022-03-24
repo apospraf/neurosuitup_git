@@ -1,0 +1,2337 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "NeuroSuitUp API",
+        "description": "Tools for communicating with the NeuroSuitUp database",
+        "version": "1.0.0",
+        "contact": {
+        "name": "Apostolos Praftsiotis",
+        "email": "apospraf@gmail.com"
+        }
+    },
+    "servers": [
+        {
+            "url":"http://192.168.100.14:3000",
+            "description":"Olpal server"
+        },
+        {
+            "url":"https://locahost:3000",
+            "description":"Temp localhost server"
+        },
+        {
+            "url": "https://neurosuituptest.herokuapp.com/",
+            "description": "Heroku free server"
+        }
+    ],
+    "components": {
+      "schemas": { 
+        "UserInsert": {
+            "type": "object",
+          "properties": {
+            "username": {
+              "type": "string",
+              "description": "The username of the user"
+            },
+            "first_name": {
+                "type": "string",
+                "description": "The first name of the user. Required for instructors and patients"
+            },
+            "last_name": {
+                "type": "string",
+                "description": "The last name of the user. Required for instructors and patients"
+            },
+            "email": {
+                "type": "string",
+                "description": "The email of the user. Required by everyone"
+            },
+            "age": {
+                "type": "integer",
+                "description": "The age of the user (Optional)."
+            },
+            "gender": {
+                "type": "string",
+                "description": "Gender of the user (Optional)."
+            },
+            "history": {
+                "type": "string",
+                "description": "Medical history of patients"
+            },
+            "role": {
+                "type": "string",
+                "description": "The role of the user. Required by everyone."
+            }
+           },
+           "required": ["username", "first_name", "last_name", "email", "password"]
+        },
+        "User": {
+            "allOf": [
+                {"$ref": "#/components/schemas/UserInsert"},
+                {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                        "type": "string",
+                        "description": "The user id (ObjectId, mongodb)"
+                        },
+                        "patients": {
+                            "type":"array",
+                            "description": "Array containing the patients of each instructor",
+                            "items": {
+                                "type": "string",
+                                "description": "The patient id (ObjectId, mongodb)"
+                            }
+                        },
+                        "poses": {
+                            "type":"array",
+                            "description": "Array containing the poses created by the specific instructor",
+                            "items": {
+                                "type": "string",
+                                "description": "The pose id (ObjectId, mongodb)"
+                            }
+                        },
+                        "tasks": {
+                            "type":"array",
+                            "description": "Array containing the tasks created by the specific instructor",
+                            "items": {
+                                "type": "string",
+                                "description": "The task id (ObjectId, mongodb)"
+                            }
+                        },
+                        "exercises": {
+                            "type":"array",
+                            "description": "Array containing the exercises created by the specific instructor",
+                            "items": {
+                                "type": "string",
+                                "description": "The exercise id (ObjectId, mongodb)"
+                            }
+                        },
+                        "analytics": {
+                            "type": "object",
+                            "description": "Progress information for the specific patient",
+                            "properties": {
+                                "belt": {
+                                    "type": "integer",
+                                    "description": "The number of completed belts"
+                                },
+                                "highscore": {
+                                    "type":"integer",
+                                    "description": "The highscore of the specefic patient"
+                                }
+                            }
+                        },
+                        "prescription":{
+                            "type":"array",
+                            "description": "Array containing the prescription of the specific patient",
+                            "items": {
+                                "type": "string",
+                                "description": "The exercise id (ObjectId, mongodb)"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "PoseInsert": {
+            "type": "object",
+            "properties": {
+                "codename": {
+                    "type": "string",
+                    "description": "The codename of the specific pose"
+                },
+                "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether or not the specific pose is available to every instructor"
+                },
+                "angles": {
+                    "type": "object",
+                    "description": "The 16 angles, that describe the specific pose",
+                    "properties": {
+                        "SyL": {
+                            "type": "string",
+                            "description": "Shoulder y angle of left hand"
+                        },
+                        "SzL": {
+                            "type": "string",
+                            "description": "Shoulder z angle of left hand"
+                        },
+                        "UxL": {
+                            "type": "string",
+                            "description": "Upper arm x angle of left hand"
+                        },
+                        "UyL": {
+                            "type": "string",
+                            "description": "Upper arm y angle of left hand"
+                        },
+                        "UzL": {
+                            "type": "string",
+                            "description": "Upper arm z angle of left hand"
+                        },
+                        "FyL": {
+                            "type": "string",
+                            "description": "Forearm y angle of left hand"
+                        },
+                        "FzL": {
+                            "type": "string",
+                            "description": "Forearm z angle of left hand"
+                        },
+                        "HxL": {
+                            "type": "string",
+                            "description": "Hand x angle of left hand"
+                        },
+                        "HzL": {
+                            "type": "string",
+                            "description": "Hand z angle of left hand"
+                        },
+                        "SyR": {
+                            "type": "string",
+                            "description": "Shoulder y angle of right hand"
+                        },
+                        "SzR": {
+                            "type": "string",
+                            "description": "Shoulder z angle of right hand"
+                        },
+                        "UxR": {
+                            "type": "string",
+                            "description": "Upper arm x angle of right hand"
+                        },
+                        "UyR": {
+                            "type": "string",
+                            "description": "Upper arm y angle of right hand"
+                        },
+                        "UzR": {
+                            "type": "string",
+                            "description": "Upper arm z angle of right hand"
+                        },
+                        "FyR": {
+                            "type": "string",
+                            "description": "Forearm y angle of right hand"
+                        },
+                        "FzR": {
+                            "type": "string",
+                            "description": "Forearm z angle of right hand"
+                        },
+                        "HxR": {
+                            "type": "string",
+                            "description": "Hand x angle of right hand"
+                        },
+                        "HzR": {
+                            "type": "string",
+                            "description": "Hand z angle of right hand"
+                        }
+                    }
+                }
+            }, 
+            "required": ["codename", "isPublic", "angles"]
+        },
+        "Pose": {
+            "allOf": [
+                {
+                    "$ref": "#/components/schemas/PoseInsert"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string",
+                            "description": "The pose id (ObjectId mongo)"
+                        }
+                    } 
+                }
+            ]
+        },
+        "TaskInsert": {
+            "type": "object",
+            "properties": {
+                "codename": {
+                    "type": "string",
+                    "description": "The codename of the specific task"
+                },
+                "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether or not the specific task is available to every instructor"
+                },
+                "difficulty": {
+                    "type": "integer",
+                    "description": "The difficulty of the specific task (1 - 10)"
+                },
+                "poses": {
+                    "type": "array",
+                    "description": "Array containing the poses that define the specific task",
+                    "items": {
+                        "type": "string",
+                        "description": "The pose id (ObjectId mongo)"
+                    }
+                }
+            },
+            "required": ["codename", "isPublic", "difficulty", "poses"]
+        },
+        "Task": {
+          "allOf": [
+              {"$ref": "#/components/schemas/TaskInsert"},
+              {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "The task id (ObjectId, mongodb)"
+                    }
+                }
+              }
+          ]  
+        },
+        "ExerciseInsert": {
+            "type": "object",
+            "properties": {
+                "codename": {
+                    "type": "string",
+                    "description": "The codename of the specific exercise"
+                },
+                "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether or not the specific exercise is available to every instructor"
+                },
+                "tasks": {
+                    "type": "array",
+                    "description": "Array containing the tasks the define the specifc exercise",
+                    "items":{
+                        "type": "string",
+                        "description": "The task id (ObjectId, mongodb)"
+                    }
+                },
+                "delays": {
+                    "type": "array",
+                    "description": "The delay in seconds for each task pair",
+                    "items": {
+                        "type": "string",
+                        "description": "The delay in seconds (sec)"
+                    }
+                }
+            }
+        },
+        "Exercise": {
+            "allOf": [
+                {"$ref": "#/components/schemas/ExerciseInsert"},
+                {
+                    "type": "object",
+                    "properties": {
+                       "_id": {
+                           "type": "string",
+                           "description": "The exercise id (ObjectId, mongodb)"
+                        }
+                    }
+                }
+            ]
+        },
+        "LevelInsert": {
+            "type": "object",
+            "properties": {
+                "codename": {
+                    "type": "string",
+                    "description": "The codename of the specific level"
+                },
+                "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether or not the specific level is available to every instructor"
+                },
+                "exercises": {
+                    "type": "array",
+                    "description": "Array containing the exercises the define the specifc level",
+                    "items":{
+                        "type": "string",
+                        "description": "The exercise id (ObjectId, mongodb)"
+                    }
+                },
+                "delays": {
+                    "type": "array",
+                    "description": "The delay in seconds for each exercise pair",
+                    "items": {
+                        "type": "string",
+                        "description": "The delay in seconds (sec)"
+                    }
+                },
+                "belt": {
+                    "type": "string",
+                    "description": "The color of the belt (optional?)"
+                }
+            }
+        },
+        "Level": {
+            "allOf": [
+                {"$ref": "#/components/schemas/LevelInsert"},
+                {
+                    "type": "object",
+                    "properties": {
+                       "_id": {
+                           "type": "string",
+                           "description": "The exercise id (ObjectId, mongodb)"
+                        }
+                    }
+                }
+            ]
+        },
+        "ErrorMessage": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "Message": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+      },
+      "parameters": {
+          "selectstring": {
+              "in": "header",
+              "name": "selectstring",
+              "description": "Selects the fields of the returned resource",
+              "schema": {
+                  "type": "string"
+              },
+              "allowEmptyValue": true
+          }
+      },
+      "responses": {
+          "SimpleMessage": {
+              "description": "A simple message response",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "message": {
+                                  "type": "string"
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+        "NotFound": {
+            "description": "The specified resource was not found",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "$ref": "#/components/schemas/Error" 
+                    }
+                }
+            }
+        }, 
+        "Unauthorized": {
+            "description": "Authorization failed, either by unsuccessfull verification of token, or by limited permissions",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                }
+            }
+        }, 
+        "InternalError": {
+            "description": "Internal or structural error",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                }
+            }
+        }
+      },
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      }
+    },
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "paths": {
+      "/users/commandingInstructor/{patientId}": {
+        "get": {
+          "summary": "Get the commanding instructor of the patient with _id = patientId",
+          "tags": ["users"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "patientId",
+              "schema": {
+                "type": "string"
+              },
+              "required": true,
+              "description": "ObjectId (string) of the patient's commanding instructor"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Found commanding instructor",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            },
+            "401": {
+                "$ref": "#/components/responses/Unauthorized"
+            },
+            "404": {
+                "$ref": "#/components/responses/NotFound"
+            },
+            "500": {
+                "$ref": "#/components/responses/InternalError"
+            }
+          }
+        }
+      },
+      "/users/byRole/{role}": {
+        "get": {
+          "summary": "Get users with role = {role}",
+          "tags": ["users"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "role",
+              "schema": {
+                "type": "string"
+              },
+              "required": true,
+              "description": "Requested role of users"
+            },
+            {
+                "$ref": "#/components/parameters/selectstring"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Query was succesfull, return the users",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": "integer",
+                        "description": "Number of users found"
+                      },
+                      "users": {
+                        "type": "array",
+                        "description": "The users that were found",
+                        "items": {
+                            "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+                "description": "Bad request, probably the role that was requested does not exist",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Message"
+                        }
+                    }
+                }
+            },
+            "401": {
+                "$ref": "#/components/responses/Unauthorized"
+            },
+            "500": {
+                "$ref": "#/components/responses/InternalError"
+            }
+          }
+        }
+      },
+      "/users/self/{userId}": {
+        "get": {
+            "summary": "Get information about the logged in user. Accessible by self only",
+            "tags": ["users"],
+            "parameters": [{
+                "in": "path",
+                "name": "userId",
+                "schema": {
+                    "type": "string"
+                },
+                "required": true,
+                "description": "The user id (ObjectId, mongo)"
+            }],
+            "responses": {
+                "200": {
+                    "description": "Query was succesfull, return the user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "$ref": "#/components/responses/NotFound"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/users/byId/{userId}": {
+          "get": {
+              "summary": "Get user information by id",
+              "tags": ["users"],
+              "parameters":[{
+                  "in": "path",
+                  "name": "userId",
+                  "schema": {
+                      "type": "string"
+                  },
+                  "required": true,
+                  "description": "The id of the requested user"
+              }, 
+              {
+                "$ref": "#/components/parameters/selectstring"
+              }], 
+              "responses": {
+                  "200": {
+                      "description": "Query was succesfull, return the user",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                "$ref": "#/components/schemas/User"
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "404": {
+                      "$ref": "#/components/responses/NotFound"
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          }
+      },
+      "/users/tokenInfo/{token}": {
+          "get": {
+              "summary": "Get the information stored in the given token",
+              "tags": ["users"],
+              "parameters": [{
+                  "in": "path",
+                  "name": "token",
+                  "schema": {
+                      "type": "string"
+                  },
+                  "required": true,
+                  "description": "The requested token"
+              }],
+              "responses": {
+                  "200": {
+                      "description": "Query was succesfull, return the token info (payload)",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                "$ref": "#/components/schemas/Message"
+                              }
+                          }
+                      }
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          }
+      }, 
+      "/users/admin/{userId}": {
+        "get": {
+            "summary": "Get user information by id with admin authorization",
+            "tags": ["users"],
+            "parameters": [{
+                "in": "path",
+                "name": "userId",
+                "schema": {
+                    "type": "string"
+                },
+                "required": true,
+                "description": "The requested user id"
+            },
+            {
+                "$ref": "#/components/parameters/selectstring"
+            }],
+            "responses": {
+                "200": {
+                    "description": "Query was succesfull, return the user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                              "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "404": {
+                    "$ref": "#/components/responses/NotFound"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/admin": {
+        "get": {
+            "summary": "Get all users, accessible only by admins",
+            "tags": ["users"],
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/selectstring"
+                }
+            ],
+            "responses": {
+                "200": {
+                  "description": "Query was succesfull, return the users",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "count": {
+                            "type": "integer",
+                            "description": "Number of users found"
+                          },
+                          "users": {
+                            "type": "array",
+                            "description": "The users that were found",
+                            "items": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/levels/{levelId}": {
+          "parameters": [{
+            "in": "path",
+            "name": "levelId",
+            "required": true,
+            "schema": {
+                "type": "string"
+            }
+          }],
+          "get": {
+              "summary": "Get level by id",
+              "tags": ["levels"],
+              "parameters": [{
+                    "$ref": "#/components/parameters/selectstring"
+              }],
+              "responses": {
+                  "200":{
+                      "description": "Query was successful, return found level",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "$ref": "#/components/schemas/Level"
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "404": {
+                      "$ref": "#/components/responses/NotFound"
+                  }, 
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          },
+          "delete": {
+              "summary": "Delete exercise by id",
+              "tags": ["levels"],
+              "responses": {
+                  "200": {
+                      "description": "Successfully deleted level",
+                      "content": {
+                          "application/json":{
+                              "schema":{
+                                  "$ref": "#/components/schemas/Message"
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "403": {
+                      "description": "Level not owned",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "$ref": "#/components/schemas/Message"
+                              }
+                          }
+                      }
+                  },
+                  "404": {
+                      "description": "User not found",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "$ref": "#/components/schemas/ErrorMessage"
+                              }
+                          }
+                      }
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          }
+      },
+      "/levels/": {
+        "get": {
+            "summary": "Get all available levels",
+            "tags": ["levels"],
+            "parameters": [{
+                "$ref": "#/components/parameters/selectstring"
+            }],
+            "responses": {
+                "200": {
+                    "description": "Query was successful, return found levels",
+                    "content": {
+                        "application/json":{
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer",
+                                        "description": "The number of found levels"
+                                    },
+                                    "levels": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Level"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }                       
+        },
+        "post": {
+            "summary": "Insert a new level to the database",
+            "tags": ["levels"],
+            "requestBody": {
+                "description": "The new level",
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "$ref": "#/components/schemas/LevelInsert"
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Level successfully inserted to the database",
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "type": "object",
+                                "properties": {
+                                    "_id": {
+                                        "type": "string",
+                                        "description": "The Mongo ObjectId the inserted level"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401":{
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "409": {
+                    "description": "Level codename already exists",
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500":{
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/fetchLevels": {
+        "post": {
+            "summary": "Fetch specific levels by ids, located at the body of the request",
+            "tags": ["levels"],
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/selectstring"
+                }
+            ],
+            "requestBody": {
+                "description": "The array of the requested level ids",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "The level id (ObjectId mongo)"
+                            }
+                        },
+                        "example": "{['615c94503b3ffd5cccec496a', '615c945e3b3ffd5cccec496b']}"
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Successfully fetched all requested levels",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer",
+                                        "description": "The number of levels"
+                                    },
+                                    "tasks": {
+                                        "type": "array",
+                                        "description": "Array containing the level ids",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401":{
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/users/signuAdmin": {
+        "post": {
+            "summary": "Sign up new admin",
+            "tags": ["users"],
+            "requestBody": {
+                "description": "The admin to sign up",
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "$ref": "#/components/schemas/UserInsert",
+                            "required": ["username", "first_name", "last_name", "email", "password"]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Succefully created admin",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            },
+                            "example": {
+                                "message": "Admin created"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Admin creation from an not admin user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "409": {
+                    "description": "Username or email exists",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            },
+                            "example": {
+                                "message": "Username or email exists"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+               
+        }
+      },
+      "/users/signup": {
+        "post": {
+            "summary": "Sign up new user",
+            "tags": ["users"],
+            "requestBody": {
+                "description": "The user to sign up",
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "$ref": "#/components/schemas/UserInsert",
+                            "required": ["username", "first_name", "last_name", "email", "password"]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Succefully created user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            },
+                            "example": {
+                                "message": "User created"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Admin creation from an not admin user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "409": {
+                    "description": "Username or email exists",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/responses/SimpleMessage"
+                            },
+                            "example": {
+                                "message": "Username or email exists"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+               
+        }
+      },
+      "/users/login": {
+        "post": {
+            "summary": "Login user with credentials.",
+            "tags": ["users"],
+            "requestBody": {
+                "description": "The credentials",
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "rUsername": {
+                                    "type": "string"
+                                },
+                                "rPassword": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["rUsername", "rPassword"]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "User succefully logged in",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "description": "User information and the access token",
+                                "properties": {
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "description": "The access token"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": {
+                                    "user": {
+                                        "analytics": null,
+                                        "_id": "615c94273b3ffd5ccc3db1dd",
+                                        "first_name": "Loukas",
+                                        "last_name": "Ouzounis",
+                                        "username": "ouzos",
+                                        "email": "ouzos@tsipour.aki",
+                                        "hash": null,
+                                        "age": 36,
+                                        "gender": "Male",
+                                        "history": "",
+                                        "role": "instructor",
+                                        "patients": [
+                                            "61656f23daf470ec8561ae9d",
+                                            "61656f6edaf470ec8561ae9e"
+                                        ],
+                                        "poses": [
+                                            "6162e6e8f7e7cb5b5924287e",
+                                            "615c94853b3ffd5cccec496c",
+                                            "615c96a63b3ffd5cccdf8816",
+                                            "615c978c3b3ffd5ccc72ddda",
+                                            "61751fc6aa7ddca06ae996c5",
+                                            "61751fe0aa7ddca06ae996ce"
+                                        ],
+                                        "tasks": [
+                                            "61712f1f17c8a14be8d94fe6",
+                                            "617131a5bcdd0d26dceaf1e0",
+                                            "617131f7bcdd0d26dceaf202",
+                                            "61713220bcdd0d26dceaf21d",
+                                            "6172aa4c6d94f01e891f8f24",
+                                            "61751feaaa7ddca06ae996d5",
+                                            "6175205aaa7ddca06ae9972e"
+                                        ],
+                                        "exercises": [
+                                            "6174378d6d01fd9aa345702a",
+                                            "61743e69e7ec886742092075",
+                                            "6172ab406d94f01e891f8f8b",
+                                            "61751a6933fa0f240b8ec018",
+                                            "61752002aa7ddca06ae996e3",
+                                            "61752072aa7ddca06ae9973c"
+                                        ],
+                                        "viewed": true,
+                                        "prescription": []
+                                    },
+                                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTVjOTQyNzNiM2ZmZDVjY2MzZGIxZGQiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsInVzZXJuYW1lIjoib3V6b3MiLCJpYXQiOjE2MzUxNjAxODksImV4cCI6MTYzNTE2Mzc4OX0.3oHbP7Y84wpMC3cB4DO2gmjkiQFt5D9W6Z0afEcTy8s",
+                                    "messsage": "Auth successful"
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/users/assign": {
+        "patch": {
+            "summary": "Assign payient to intructor",
+            "tags": ["users"],
+            "requestBody": {
+                "description": "The patientId",
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "type": "object", 
+                            "properties": {
+                                "patientId": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["patientId"]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Patient successfully added to instructor list",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message", 
+                                "example": {
+                                    "patientId": "616092b63d00a77c869ba529"
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "409": {
+                    "description": "Patient is already assigned to another instructor",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      }, 
+      "/users/unassign": {
+        "patch": {
+            "summary": "Remove patient from logged intructor patient list",
+            "tags": ["users"],
+            "requestBody": {
+                "description": "The patientId",
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "type": "object", 
+                            "properties": {
+                                "patientId": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["patientId"]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Patient successfully removed from instructor patient list",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "403": {
+                    "description": "Patient is not assigned to the logged in instructor",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/users/updatePrescription/{patientId}": {
+        "patch": {
+            "summary": "Update prescription of requested user",
+            "tags": ["users"],
+            "parameters": [{
+                "in": "path",
+                "name": "patientId",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }],
+            "requestBody": {
+                "description": "The new prescription",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "description": "The list of exercises",
+                            "items": {
+                                "type": "string",
+                                "description": "The exercise id (ObjectId mongodb)"
+                            }
+                        },
+                        "example": "{['6172ab406d94f01e891f8f8b', '61715d575e9cdb35e55281e9', '6174378d6d01fd9aa345702a', '61743e69e7ec886742092075']}"
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Successfully updated patient prescription",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                }, 
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/users/delete/{userId}": {
+        "delete": {
+            "summary": "Delete self user",
+            "tags": ["users"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "userId",
+                    "description": "The id of the user to be deleted",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ], 
+            "responses": {
+                "200": {
+                    "description": "User successfully deleted",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            },
+                            "example": {
+                                "message": "User deleted!"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/users/delete/admin/{userId}": {
+        "delete": {
+            "summary": "Delete patient with admin authoriazation",
+            "tags": ["users"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "userId",
+                    "description": "The id of the user to be deleted",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "User successfully deleted",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            },
+                            "example": {
+                                "message": "User deleted!"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/poses/codenameExists/{codename}": {
+          "get": {
+            "summary": "Check if codename of pose exists in the database",
+            "tags": ["poses"],
+            "parameters": [{
+                "in": "path",
+                "name": "codename",
+                "description": "The codename to be searched",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }],
+            "responses": {
+                "200": {
+                    "description": "Query was successful",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type":"boolean"
+                            }
+                        }
+                    }
+                }, 
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+          }
+      },
+      "/poses": {
+          "get": {
+              "summary": "Get all available poses for the logged in instructor",
+              "tags": ["poses"],
+              "parameters": [{
+                  "$ref": "#/components/parameters/selectstring"
+              }],
+              "responses": {
+                  "200": {
+                      "description": "Successfully fetched all available poses",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                      "count": {
+                                          "type": "integer",
+                                          "description": "The number of poses"
+                                      }, 
+                                      "poses": {
+                                          "type": "array",
+                                          "description": "Array containing all the poses",
+                                          "items": {
+                                              "$ref": "#/components/schemas/Pose"
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          },
+          "post": {
+            "summary": "Insert a new pose to the database",
+            "tags": ["poses"],
+            "parameters": [{
+                "$ref": "#/components/parameters/selectstring"
+            }],
+            "requestBody": {
+                "description": "The pose to be added",
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PoseInsert"
+                        }
+                    }
+                }
+            }, 
+            "responses": {
+                "201": {
+                    "description": "Successfully inserted pose to database",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "description": "The new pose id",
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "409": {
+                    "description": "Pose codename already exists",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+          },
+          "patch": {
+              "summary": "Update pose angles with a given codename",
+              "tags": ["poses"],
+              "parameters": [
+                  {
+                      "in": "path",
+                      "name": "codename",
+                      "description": "Codename of the requested pose",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                  }
+              ],
+              "responses": {
+                  "200": {
+                      "description": "Successfully update pose",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                "$ref": "#/components/schemas/Message"
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          }
+      }, 
+      "/poses/{poseId}": {
+        "parameters": [{
+            "in": "path",
+            "name": "poseId",
+            "description": "The pose id",
+            "required": true,
+            "schema": {
+                "type": "string"
+            }
+        }],
+        "get": {
+            "summary": "Get pose by id",
+            "tags": ["poses"],
+            "parameters": [{
+                "$ref": "#/components/parameters/selectstring"
+            }],
+            "responses": {
+                "200": {
+                    "description": "Pose succefully found",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Pose"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                }, 
+                "404": {
+                    "description": "Pose not found",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        },
+        "delete": {
+            "summary": "Delete a pose by id",
+            "tags": ["poses"],
+            "responses": {
+                "200": {
+                    "description": "Successfully deleted pose",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "403": {
+                    "description": "Pose is not owned, thus cannot be deleted",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "409": {
+                    "description": "Some tasks will be affected after deleting this pose",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "tasks": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Task"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/poses/fetchPoses": {
+          "post": {
+              "summary": "Fetch specific poses with ids, located at the body of the request",
+              "tags": ["poses"],
+              "parameters": [
+                  {
+                      "$ref": "#/components/parameters/selectstring"
+                  }
+              ],
+              "requestBody": {
+                  "description": "The array of the requested pose ids",
+                  "content": {
+                      "application/json": {
+                          "schema": {
+                              "type": "array",
+                              "items": {
+                                  "type": "string",
+                                  "description": "The pose id (ObjectId mongo)"
+                              }
+                          },
+                          "example": "{['615c94503b3ffd5cccec496a', '615c945e3b3ffd5cccec496b']}"
+                      }
+                  }
+              },
+              "responses": {
+                  "200": {
+                      "description": "Successfully fetched all poses",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                      "count": {
+                                          "type": "integer",
+                                          "description": "The number of found poses"
+                                      },
+                                      "poses": {
+                                          "type": "array",
+                                          "description": "Array containg the pose ids",
+                                          "items": {
+                                              "type": "string"
+                                            }
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          }
+      },
+      "/poses/copyPose/{poseId}": {
+        "patch": {
+            "tags": ["poses"],
+            "summary": "Copy pose from public space to user space",
+            "parameters": [{
+                "in": "path",
+                "name": "poseId",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "description": "The id of the pose to be copied"
+                }
+            }],
+            "responses": {
+                "201": {
+                    "description": "Pose was successufully copied",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "403": {
+                    "description": "Pose is not owned, thus cannot be copied",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "$ref": "#/components/responses/NotFound"
+                },
+                "409": {
+                    "description": "Pose already owned",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/poses/{codename}": {
+        "patch": {
+            "tags": ["poses"],
+            "summary": "Edit pose, only accessible by pose owner",
+            "parameters": [{
+                "in": "path",
+                "name": "codename",
+                "description": "The codename of the pose",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }],
+            "responses": {
+                "200": {
+                    "description": "Successfully updated pose",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                }, 
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "403": {
+                    "description": "Pose is not owned, thus cannot be edited",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "$ref": "#/components/responses/NotFound"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/tasks": {
+            "get": {
+                "summary": "Get all available tasks for the logged in instructor",
+                "tags": ["tasks"],
+                "parameters": [{
+                    "$ref": "#/components/parameters/selectstring"
+                }], 
+                "responses": {
+                    "200": {
+                        "description": "Query successfull, return all found tasks",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer"
+                                        },
+                                        "tasks": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Task"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalError"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Insert a new task to the database",
+                "tags": ["tasks"],
+                "requestBody": {
+                    "description": "The new task",
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TaskInsert"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Task successfully inserted to the database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "409": {
+                        "description": "Task codename already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Message"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalError"
+                    }
+                }
+            }  
+      },
+      "/tasks/{taskId}": {
+          "parameters": [{
+              "in": "path",
+              "name": "taskId",
+              "description": "The requested task id",
+              "required": true,
+              "schema": {
+                  "type": "string"
+              }
+          }],
+          "get": {
+              "summary": "Get task by id",
+              "tags": ["tasks"],
+              "parameters": [{
+                  "$ref": "#/components/parameters/selectstring"
+              }],
+              "responses": {
+                  "200": {
+                      "description": "Query was successful, return found task",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                      "task": {
+                                          "$ref": "#/components/schemas/Task"
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }, 
+                  "404": {
+                      "description": "Task was not found",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                "$ref": "#/components/schemas/Message"
+                              }
+                          }
+                      }
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          },
+          "delete": {
+              "summary": "Delete task by id",
+              "tags": ["tasks"],
+              "responses": {
+                  "200": {
+                      "description": "Successfully deleted task",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                "$ref": "#/components/schemas/Message"
+                              }
+                          }
+                      }
+                  },
+                  "401": {
+                      "$ref": "#/components/responses/Unauthorized"
+                  },
+                  "403": {
+                    "description": "Task is not owned, thus cannot be deleted",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                  },
+                  "409": {
+                      "description": "Deleting this task will affect some Exercises",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                      "message": {
+                                          "type": "string"
+                                      },
+                                      "exercises": {
+                                          "$ref": "#/components/schemas/Exercise"
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "500": {
+                      "$ref": "#/components/responses/InternalError"
+                  }
+              }
+          }
+      },
+      "/fetchTasks": {
+        "post": {
+            "summary": "Fetch specific tasks with ids, located at the body of the request",
+            "tags": ["tasks"],
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/selectstring"
+                }
+            ],
+            "requestBody": {
+                "description": "The array of the requested task ids",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "The task id (ObjectId mongo)"
+                            }
+                        },
+                        "example": "{['615c94503b3ffd5cccec496a', '615c945e3b3ffd5cccec496b']}"
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Successfully fetched all tasks",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer",
+                                        "description": "The number of found tasks"
+                                    },
+                                    "tasks": {
+                                        "type": "array",
+                                        "description": "Array containg the task ids",
+                                        "items": {
+                                            "type": "string"
+                                          }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+      },
+      "/exercises": {
+        "get": {
+            "summary": "Get all available exercises for the logged in instructor",
+            "tags": ["exercises"],
+            "parameters": [{
+                "$ref": "#/components/parameters/selectstring"
+            }], 
+            "responses": {
+                "200": {
+                    "description": "Query successfull, return all found exercises",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer"
+                                    },
+                                    "exercises": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Exercise"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        },
+        "post": {
+            "summary": "Insert a new exercise to the database",
+            "tags": ["exercises"],
+            "requestBody": {
+                "description": "The new exercise",
+                "required": true,
+                "content": {
+                    "application/x-www-form-urlencoded": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ExerciseInsert"
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Exercise successfully inserted to the database",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "_id": {
+                                        "type": "string",
+                                        "description": "The id (Mongo Object id) of the inserted exercise"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "409": {
+                    "description": "Exercise codename already exists",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }  
+    },
+    "/exercises/{exerciseId}": {
+        "parameters": [{
+            "in": "path",
+            "name": "exerciseId",
+            "description": "The requested exercise id",
+            "required": true,
+            "schema": {
+                "type": "string"
+            }
+        }],
+        "get": {
+            "summary": "Get exercise by id",
+            "tags": ["exercises"],
+            "parameters": [{
+                "$ref": "#/components/parameters/selectstring"
+            }],
+            "responses": {
+                "200": {
+                    "description": "Query was successful, return found exercise",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "task": {
+                                        "$ref": "#/components/schemas/Exercise"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401":{
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "404": {
+                    "description": "Exercise was not found",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        },
+        "delete": {
+            "summary": "Delete exercise by id",
+            "tags": ["exercises"],
+            "responses": {
+                "200": {
+                    "description": "Successfully deleted exercise",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "403": {
+                    "description": "Exercise is not owned, thus cannot be deleted",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Message"
+                            }
+                        }
+                    }
+                },
+                "409": {
+                    "description": "Deletion conflict",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Deleting this exercise will affect the prescriptions of some users"
+                                    },
+                                    "users": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "The username of the affected user"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+    },
+    "/fetchExercises": {
+        "post": {
+            "summary": "Fetch specific exercises with ids, located at the body of the request",
+            "tags": ["exercises"],
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/selectstring"
+                }
+            ],
+            "requestBody": {
+                "description": "The array of the requested exercise ids",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "The exercise id (ObjectId mongo)"
+                            }
+                        },
+                        "example": "{['615c94503b3ffd5cccec496a', '615c945e3b3ffd5cccec496b']}"
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Successfully fetched all exercises",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer",
+                                        "description": "The number of found exercises"
+                                    },
+                                    "tasks": {
+                                        "type": "array",
+                                        "description": "Array containing the exercise ids",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/Unauthorized"
+                },
+                "500": {
+                    "$ref": "#/components/responses/InternalError"
+                }
+            }
+        }
+    }
+    }
+}
